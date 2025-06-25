@@ -16,6 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
 #HttpResponse: home 화면 없어서 임시로 만든거, home 화면 생기면 지울거임
 from django.http import HttpResponse
 
@@ -23,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #home 화면 없어서 임시로 만든거
     path('', lambda request: HttpResponse("임시 홈")),
-    path('accounts/', include('accounts.urls')),
+    path('', include('accounts.urls')),
     path('authaccounts/', include('allauth.urls')), #소셜 로그인
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
