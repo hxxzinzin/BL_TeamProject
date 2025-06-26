@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class Store(models.Model) : 
     #리스트[] & 튜플(), choices는 튜플 또는 튜플 리스트만 허용
@@ -40,10 +41,29 @@ class Store(models.Model) :
     current_customers = models.IntegerField(verbose_name="현재 손님 수", default=0)
     max_customers = models.IntegerField(verbose_name="최대 수용 인원", default=0)
 
-    #가게 정보
-    is_open = models.BooleanField(verbose_name="영업 여부", default=True)
-    is_breaktime = models.BooleanField(verbose_name="브레이크 타임 여부", default=False)
+    #영업 시간
+    open_time = models.TimeField(verbose_name="영업 시작 시간", blank=True, null=True)
+    close_time = models.TimeField(verbose_name="영업 종료 시간", blank=True, null=True)
+    break_start_time = models.TimeField(verbose_name="브레이크타임 시작 시간", blank=True, null=True)
+    break_end_time = models.TimeField(verbose_name="브레이크타임 종료 시간", blank=True, null=True)
 
+    def is_open_now(self):
+        now = timezone.localtime().time()
+        # timezone.now() → 현재 시간을 반환, timezone.localtime() → 로컬 시간으로 바꿔줌
+        # 내부적으로 timezone.now() 호출: timezone.localtime(timezone.now()).time()
+        # 현재 시간(.localtime)을 얻고, 시간 부분만 분리(.time)
+        if self.open_time and self.close_time: 
+            return self.open_time <= now <= self.close_time
+            # 지금이 영업 시간 범위에 포함되는지 True, False 반환
+        return False
+
+    def is_breaktime_now(self):
+        now = timezone.localtime().time()
+        if self.break_start_time and self.break_end_time:
+            return self.break_start_time <= now <= self.break_end_time
+        return False
+
+    #가게 링크
     naver_url = models.URLField(verbose_name="가게 네이버 링크", blank=True, null=True)
 
     created_at = models.DateTimeField(verbose_name="등록일", auto_now_add=True)
