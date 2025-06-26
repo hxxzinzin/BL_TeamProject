@@ -1,0 +1,44 @@
+[
+{
+  "model": "stores.store",
+  "pk": 1,
+  "fields": {
+    "category": "restaurant",
+    "subcategory": "japanese",
+    "photo": "",
+    "name": "토라카츠",
+    "rating": 5.0,
+    "address": "서울 성북구 장월로1길 90 토라카츠",
+    "latitude": 37.60496,
+    "longitude": 127.043711,
+    "congestion": "medium",
+    "current_customers": 12,
+    "max_customers": 24,
+    "is_open": true,
+    "is_breaktime": true,
+    "naver_url": "https://naver.me/FMcvKZFj",
+    "created_at": "2025-06-26T08:24:40.866Z"
+  }
+},
+{
+  "model": "stores.store",
+  "pk": 2,
+  "fields": {
+    "category": "cafe",
+    "subcategory": null,
+    "photo": "",
+    "name": "모모양과",
+    "rating": 5.0,
+    "address": "서울 성북구 화랑로11길 23 1층 모모양과",
+    "latitude": 37.603368,
+    "longitude": 127.04167,
+    "congestion": "low",
+    "current_customers": 1,
+    "max_customers": 0,
+    "is_open": true,
+    "is_breaktime": false,
+    "naver_url": "https://naver.me/Fk7gmnCd",
+    "created_at": "2025-06-26T08:36:17.291Z"
+  }
+}
+]
