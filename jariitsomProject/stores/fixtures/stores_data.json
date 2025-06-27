@@ -182,5 +182,28 @@
     "naver_url": null,
     "created_at": "2025-06-27T02:56:14.411Z"
   }
+},
+{
+  "model": "stores.store",
+  "pk": 9,
+  "fields": {
+    "category": "restaurant",
+    "subcategory": "salad",
+    "photo": "store_photo/apple.png",
+    "name": "사과(이미지)",
+    "rating": 3.0,
+    "address": "Seoul",
+    "latitude": 1.0,
+    "longitude": 1.0,
+    "congestion": "high",
+    "current_customers": 5,
+    "max_customers": 6,
+    "open_time": "06:00:00",
+    "close_time": "18:00:00",
+    "break_start_time": null,
+    "break_end_time": null,
+    "naver_url": "https://www.youtube.com/",
+    "created_at": "2025-06-27T03:33:03.969Z"
+  }
 }
 ]

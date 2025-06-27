@@ -34,7 +34,7 @@
 ---
 ## 가게 데이터 유지 관련
 
-### 설치 후 가게 데이터 받기
+#### 설치 후 가게 데이터 받기
 - 만약 pull 해온 Store 데이터와 내 Store 데이터가 다르다면 미리 삭제 작업(충돌 방지)
 1. python manage.py shell
 - 이 밑은 shell에서 작성
@@ -45,6 +45,9 @@
 - pull 해온 Store 데이터와 충돌이 나지 않을 데이터가 존재하거나, Store 데이터가 없다면
 5. python manage.py loaddata stores/fixtures/stores_data.json
 
-### 만약 가게 데이터를 변경/추가 했을 경우
+#### 만약 가게 데이터를 변경/추가 했을 경우
+- python export_stores.py
+
+#### 초기 데이터 구성
 - python manage.py dumpdata stores.Store --indent 2 > stores/fixtures/stores_data.json
 - 만약 stores 앱에 fixtures 디렉토리가 없다면 추가해야 함
