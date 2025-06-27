@@ -44,10 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
-    # 밑에랑 중복이라 주석처리 함 확인했으면 삭제
-    # 'django.contrib.sites',
-    # 'allauth',
-    # 'allauth.account',
+    
     'dj_rest_auth.registration',
 
     # 소셜 로그인 설정
@@ -57,7 +54,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.kakao', #카카오로 바꿈
 
-    #앱 등록
     'accounts',
     'stores',
 ]
@@ -150,7 +146,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
@@ -161,9 +157,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
