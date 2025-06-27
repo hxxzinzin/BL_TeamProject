@@ -24,9 +24,12 @@ from django.http import HttpResponse
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     #home 화면 없어서 임시로 만든거
     path('', lambda request: HttpResponse("임시 홈")),
+
     path('', include('accounts.urls')),
     path('authaccounts/', include('allauth.urls')), #소셜 로그인
+    path('', include('stores.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
