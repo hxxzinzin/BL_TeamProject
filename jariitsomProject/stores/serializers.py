@@ -24,3 +24,10 @@ class StoreSerializer(serializers.ModelSerializer):
                   'is_open', 'is_breaktime', 'naver_url', 'created_at' ]
         # is_open, is_breaktime은 모델에는 필요 없는 필드지만, 프론트에는 보내줘야 함
 
+# 혼잡도 구현을 위한 혼잡도 관련 필드만 처리하는 serializer
+class StoreCongestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = ['id', 'name', 'current_customers', 'max_customers', 'congestion']
+        # 변경 불가능하게끔 그냥 읽기만 되는 필드 지정
+        read_only_fields = ['id', 'name', 'max_customers']
