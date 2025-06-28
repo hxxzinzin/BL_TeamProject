@@ -87,7 +87,7 @@ REST_FRAMEWORK = {
     'rest_framework.authentication.TokenAuthentication', 
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # 인증된 사용자만 허용
+        'rest_framework.permissions.IsAuthenticated', # 모든 요청 시 인증된 사용자만 허용
     ],
 }
 
