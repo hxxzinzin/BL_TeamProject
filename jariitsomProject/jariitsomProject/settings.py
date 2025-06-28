@@ -86,6 +86,9 @@ REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
     'rest_framework.authentication.TokenAuthentication', 
     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # 인증된 사용자만 허용
+    ],
 }
 
 AUTH_USER_MODEL = 'accounts.User' #기본 User 대신 내가 만든 User 사용
