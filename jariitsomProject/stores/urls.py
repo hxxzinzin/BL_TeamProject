@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 from .views import StoreViewSet
 from .views import get_store_congestion, update_store_congestion
+from .views import toggle_bookmark, list_bookmarks
 
 store_router = SimpleRouter()
 store_router.register('stores', StoreViewSet)
@@ -16,4 +17,8 @@ urlpatterns = [
         # 붙이는 경우는 이후에 웹페이지용과 API용 URL이 불분명해져서 붙이는 것임.
         # 지금은 안붙이겠음!
     path('stores/<int:store_id>/update_congestion/', update_store_congestion, name='api_update_congestion'),
+
+    # 즐겨찾기
+    path('bookmarks/', list_bookmarks, name='list_bookmarks'),
+    path('stores/<int:store_id>/bookmark/', toggle_bookmark, name='toggle_bookmark'),
 ]
