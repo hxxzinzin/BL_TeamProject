@@ -30,6 +30,6 @@ urlpatterns = [
 
     path('', include('accounts.urls')),
     path('authaccounts/', include('allauth.urls')), #소셜 로그인
-    path('', include('stores.urls')),
+    path('', include('stores.urls')), # 혼잡도 구현을 위해서는 해당 줄 삭제 절대 금물
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
