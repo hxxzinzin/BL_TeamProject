@@ -1,11 +1,10 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Store, Bookmark
-from .serializers import StoreSerializer, BookmarkSerializer
-from .serializers import StoreCongestionSerializer
+from .models import Store, Bookmark, VisitLog
+from .serializers import VisitLogSerializer, BookmarkSerializer
+from .serializers import StoreSerializer, StoreCongestionSerializer
 from rest_framework.viewsets import ModelViewSet
 from django.db.models import F, Case, When, Value
 from rest_framework import filters
@@ -140,3 +139,34 @@ def list_bookmarks(request):
     # 해당 사용자가 북마크한 가게 목록을 가져옴과 동시에 store 정보까지 가져옴
     serializer = BookmarkSerializer(bookmarks, many=True, context={'request':request})
     return Response(serializer.data)
+
+# 손님 방문 기록 작성하기
+@api_view(['POST'])
+def create_visit_log(request, store_id):
+    try:
+        store = Store.objects.get(id=store_id)
+    except Store.DoesNotExist:
+        return Response({'error': '가게 정보를 찾을 수 없습니다.'}, status=404)
+
+    data = request.data.copy()
+    data['store'] = store.id
+    serializer = VisitLogSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+# 손님 방문 기록 조회 (가장 최근 방문 정보 1건)
+@api_view(['GET'])
+def get_latest_visit_log(request, store_id):
+    try:
+        store = Store.objects.get(id=store_id)
+    except Store.DoesNotExist:
+        return Response({'error': '가게 정보를 찾을 수 없습니다.'}, status=404)
+
+    latest_log = store.visit_logs.order_by('-created_at').first()
+    if not latest_log:
+        return Response({'message': '아직 한번도 방문하지 않은 가게입니다.'}, status=204)
+
+    serializer = VisitLogSerializer(latest_log)
+    return Response(serializer.data, status=200)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Store, Bookmark
+from .models import Store, Bookmark, VisitLog
 
 class StoreSerializer(serializers.ModelSerializer): 
     # 현재 시간에 따라 값이 입력되는 is_open, is_breaktime 필드
@@ -50,3 +50,11 @@ class BookmarkSerializer(serializers.ModelSerializer):
         model = Bookmark
         fields = ['id', 'store', 'store_id', 'created_at']
         # 북마크 아이디, 가게 전체 정보, 가게 아이디, 북마크한 시각
+
+# 손님 방문 기록 직렬화
+class VisitLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VisitLog
+        # visit_count => 방문객 명수, created_at => 해당 기록이 작성된 시간
+        fields = ['id', 'store', 'visit_count', 'wait_time', 'congestion', 'created_at']
+        read_only_fields = ['id', 'created_at']
