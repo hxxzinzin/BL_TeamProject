@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Store
-from .serializers import StoreSerializer
+from .models import Store, Bookmark
+from .serializers import StoreSerializer, BookmarkSerializer
 from .serializers import StoreCongestionSerializer
 from rest_framework.viewsets import ModelViewSet
 from django.db.models import F, Case, When, Value
@@ -13,7 +13,6 @@ from rest_framework import filters
 # api view를 통해 혼잡도 입력부분 구현
 ### 현재 손님 수만 입력하면 알아서 혼잡도의 정도를 정해서 db에 해당 내용 저장
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def update_store_congestion(request, store_id):
     try:
         store = Store.objects.get(id=store_id)
@@ -65,7 +64,6 @@ def update_store_congestion(request, store_id):
 
 # 가게 혼잡도 정보 조회
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_store_congestion(request, store_id):
     try:
         store = Store.objects.get(id=store_id)
@@ -79,10 +77,16 @@ class StoreViewSet(ModelViewSet):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request  # context에 request를 추가함
+        return context
+
     def get_queryset(self):
         queryset = Store.objects.all() # 여기에 한 번 더 선언 해줘야 됨
         category = self.request.query_params.get('category')
         subcategory = self.request.query_params.get('subcategory')
+        bookmarked = self.request.query_params.get('bookmarked')
 
         if category is not None:
             queryset = queryset.filter(category=category)
@@ -91,6 +95,10 @@ class StoreViewSet(ModelViewSet):
         if subcategory is not None:
             queryset = queryset.filter(subcategory=subcategory)
             # 조건이 대체 되는 게 아닌 누적 되는 식으로 작동함
+
+        if bookmarked == 'true':
+            queryset = queryset.filter(bookmarked_by__user=self.request.user)
+            # 이 store를 즐겨찾기한 사용자 중 현재 로그인한 사용자가 있는지 역참조
 
         # 여유로운순 정렬을 위한 인구 비율 계산
         # .annotate(): 기존 Store 객체들 각각에 새 필드(population_ratio)를 붙이는 역할
@@ -111,3 +119,24 @@ class StoreViewSet(ModelViewSet):
     search_fields = ['name']
     ordering_fields = ['rating', 'population_ratio']
     
+# 클릭할 때마다 즐겨찾기 추가, 삭제
+@api_view(['POST'])
+def toggle_bookmark(request, store_id):
+    user = request.user
+    store = Store.objects.get(id=store_id)
+    bookmark, created = Bookmark.objects.get_or_create(user=user, store=store)
+    #즐겨찾기가 이미 되어 있으면 -> created == False
+    
+    if not created: 
+        bookmark.delete() # 즐겨찾기에서 삭제
+        return Response(status=200) 
+    return Response(status=201) 
+
+# 로그인한 사용자의 즐겨찾기 리스트 가져오기
+@api_view(['GET'])
+def list_bookmarks(request):
+    user = request.user
+    bookmarks = Bookmark.objects.filter(user=user).select_related('store')
+    # 해당 사용자가 북마크한 가게 목록을 가져옴과 동시에 store 정보까지 가져옴
+    serializer = BookmarkSerializer(bookmarks, many=True, context={'request':request})
+    return Response(serializer.data)

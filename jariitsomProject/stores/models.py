@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 
 class Store(models.Model) : 
     #리스트[] & 튜플(), choices는 튜플 또는 튜플 리스트만 허용
@@ -70,3 +71,17 @@ class Store(models.Model) :
     
     def __str__(self):
         return self.name
+
+# 즐겨찾기 모델(사용자와 즐겨찾기 가게 관계 저장)
+class Bookmark(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookmarks')
+                            # 만들어둔 accounts.User 참조, 사용자가 삭제되면 같이 삭제됨
+    store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='bookmarked_by')
+                            # 즐겨찾기 대상인 가게, 가게가 삭제되면 같이 삭제됨
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'store')  # 중복 즐겨찾기 방지
+
+    def __str__(self):
+        return f"{self.user} bookmarks {self.store}"
