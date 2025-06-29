@@ -85,3 +85,40 @@ class Bookmark(models.Model):
 
     def __str__(self):
         return f"{self.user} bookmarks {self.store}"
+
+# 손님 방문기록 관련 모델 추가
+class VisitLog(models.Model):
+
+    VISIT_COUNT_CHOICES = [
+        (1, '1명'),
+        (2, '2명'),
+        (3, '3명'),
+        (4, '4명'),
+        (5, '5명'),
+        (6, '6명 이상'),
+    ]
+
+    WAIT_TIME_CHOICES = [
+        ('바로 입장', '바로 입장'),
+        ('10분 이내', '10분 이내'),
+        ('20분 이내', '20분 이내'),
+        ('30분 이내', '30분 이내'),
+        ('1시간 이내', '1시간 이내'),
+        ('2시간 이상', '2시간 이상'),
+    ]
+
+    CONGESTION_CHOICES = [
+        ('여유', '여유'),
+        ('보통', '보통'),
+        ('혼잡', '혼잡'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 방문자
+    store = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='visit_logs')  # 어떤 가게
+    visit_count = models.PositiveIntegerField(choices=VISIT_COUNT_CHOICES)  # 몇 명 방문
+    wait_time = models.CharField(max_length=20, choices=WAIT_TIME_CHOICES)  # 대기 시간 (예: '바로 입장', '10분 이내' 등)
+    congestion = models.CharField(max_length=10, choices=CONGESTION_CHOICES)  # 혼잡도 정보 (예: '여유', '보통', '혼잡')
+    created_at = models.DateTimeField(auto_now_add=True)  # 언제 입력했는지
+
+    def __str__(self):
+        return f'{self.store.name} 방문기록 - {self.user.username}'
