@@ -20,14 +20,20 @@ def update_store_congestion(request, store_id):
     
     # 현재 손님 수를 필수 입력 필드로 지정 -> 입력 안하면 err 생성
     current_customers = request.data.get('current_customers')
-    if current_customers is None:
-        return Response({'error': 'current_customers 값이 필요합니다.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    # 현재 손님 수가 정수형이 아니라면 에러 생성
+    # 값이 비었거나 None이면 에러
+    if current_customers is None or str(current_customers).strip() == '':
+        return Response({'error': 'current_customers 값이 필요합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # 정수로 변환 시도
     try:
         current_customers = int(current_customers)
     except ValueError:
         return Response({'error': 'current_customers는 정수여야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # 음수 값은 허용하지 않음
+    if current_customers < 0:
+        return Response({'error': 'current_customers는 0 이상의 정수여야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
     # 최대 손님 수가 입력 안되어있다면 에러 생성
         # 근데 이건 우리가 직접 db에 입력하는거라면 굳이 싶긴한데 그래도 넣는게 안전할 듯
@@ -104,7 +110,7 @@ class StoreViewSet(ModelViewSet):
         queryset = queryset.annotate(
             # annotate 안은 Django ORM의 SQL 연산 표현식 공간 -> if문 못 씀 -> Case, When 사용
             population_ratio = Case(
-                # 만약 0 나눗셈 방지용 -> 최대 수용 인원이 0일 때 혼잡도 최대(1.0)으로 둠
+                # 0 나눗셈 방지용 -> 만약 최대 수용 인원이 0일 때 혼잡도 최대(1.0)으로 둠
                 When(max_customers = 0, then = Value(1.0)),
                 # F(): 모델 필드를 참조하는 객체, * 1.0은 정수 나눗셈 방지용
                 default = F('current_customers') * 1.0 / F('max_customers')
