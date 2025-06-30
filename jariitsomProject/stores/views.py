@@ -69,7 +69,7 @@ def get_store_congestion(request, store_id):
     except Store.DoesNotExist:
         return Response({'error': '가게를 찾을 수 없습니다.'}, status=404)
 
-    serializer = StoreSerializer(store)
+    serializer = StoreSerializer(store, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 class StoreViewSet(ModelViewSet):
